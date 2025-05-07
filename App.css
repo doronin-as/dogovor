@@ -1,0 +1,113 @@
+/* App.css */
+.app {
+  font-family: 'Roboto', 'Arial', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #0066cc;
+  padding-bottom: 20px;
+}
+
+.app-header h1 {
+  color: #0066cc;
+  font-size: 28px;
+}
+
+.app-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container {
+  margin-bottom: 40px;
+}
+
+.preview-container {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+/* Кнопки */
+.btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background-color: #0066cc;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0055aa;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.875rem;
+}
+
+/* Адаптивные стили */
+@media screen and (min-width: 768px) {
+  .app-content {
+    flex-direction: row;
+  }
+  
+  .form-container {
+    flex: 1;
+    margin-right: 20px;
+    margin-bottom: 0;
+  }
+  
+  .preview-container {
+    flex: 1;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}

@@ -1,0 +1,15 @@
+src/
+├── App.js                  # Основной компонент приложения
+├── App.css                 # Основные стили приложения
+├── index.js                # Точка входа
+├── index.css               # Глобальные стили
+├── components/
+│   ├── ContractForm.js     # Компонент формы договора
+│   ├── ContractForm.css    # Стили формы договора
+│   ├── StudentForm.js      # Компонент формы студента
+│   ├── StudentForm.css     # Стили формы студента
+│   ├── ContractPreview.js  # Компонент предпросмотра договора
+│   └── ContractPreview.css # Стили предпросмотра договора
+└── utils/
+    ├── contractGenerator.js # Генератор контента договора
+    └── docxGenerator.js     # Утилита для генерации DOCX-файла
