@@ -1,0 +1,173 @@
+/* ContractPreview.css */
+.contract-preview {
+  width: 100%;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.preview-header h2 {
+  margin: 0;
+  color: #0066cc;
+  font-size: 20px;
+}
+
+.preview-content {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.preview-content pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  margin: 0;
+}
+
+/* Стили для отображения контракта */
+.contract {
+  font-family: 'Times New Roman', Times, serif;
+  color: #000;
+  line-height: 1.5;
+}
+
+.contract-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.contract-header h1 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.contract-header h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.contract-body h3 {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0 15px;
+}
+
+.contract-body h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 15px 0 10px;
+}
+
+.contract-body p {
+  text-align: justify;
+  margin-bottom: 10px;
+}
+
+.contract-body ol {
+  margin-left: 20px;
+  padding-left: 0;
+}
+
+.contract-body ul {
+  margin-left: 30px;
+  padding-left: 0;
+}
+
+.contract-body li {
+  margin-bottom: 5px;
+}
+
+.contract-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.contract-body th,
+.contract-body td {
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.contract-body th {
+  font-weight: bold;
+  background-color: #f2f2f2;
+}
+
+.executors {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.executor {
+  width: 48%;
+}
+
+.executor h4 {
+  margin-top: 0;
+}
+
+.signatures-table td {
+  vertical-align: top;
+  padding: 15px;
+}
+
+.contract-appendix {
+  margin-top: 40px;
+  page-break-before: always;
+}
+
+.contract-appendix h2 {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.appendix-section {
+  margin: 15px 0;
+}
+
+.appendix-table {
+  margin: 15px 0;
+}
+
+.students-table {
+  font-size: 12px;
+}
+
+.inner-table {
+  width: 100%;
+  border: none;
+}
+
+.inner-table td {
+  border: 1px solid #000;
+  padding: 5px;
+  text-align: center;
+}
+
+.appendix-signatures {
+  margin-top: 30px;
+}
+
+.appendix-signatures h3 {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin: 15px 0;
+}
