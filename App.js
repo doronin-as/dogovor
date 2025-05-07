@@ -164,19 +164,21 @@ function App() {
   
 const handleDownload = async () => {
   if (generatedContract) {
-    // Генерируем корректное имя файла
-    const filename = formData.companyShortName 
-      ? `Договор_${formData.companyShortName.replace(/[^\w\s-]/gi, '')}`
-      : 'Договор_о_практике';
-    
     try {
-      return await downloadDocx(generatedContract, filename);
+      // Генерируем корректное имя файла
+      const filename = formData.companyShortName 
+        ? `Договор_${formData.companyShortName.replace(/[^\w\s-]/gi, '')}`
+        : 'Договор_о_практике';
+      
+      // Вызываем функцию скачивания и дожидаемся результата
+      await downloadDocx(generatedContract, filename);
+      return true; // Успешное скачивание
     } catch (error) {
       console.error('Ошибка при скачивании:', error);
-      return false;
+      return false; // Ошибка скачивания
     }
   }
-  return false;
+  return false; // Нет данных для скачивания
 };
   
   return (
