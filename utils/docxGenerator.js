@@ -1,5 +1,6 @@
 // utils/docxGenerator.js
 import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, AlignmentType, HeadingLevel } from 'docx';
+import { saveAs } from 'file-saver';
 
 export const downloadDocx = async (htmlContent, fileName) => {
   try {
@@ -25,16 +26,16 @@ export const downloadDocx = async (htmlContent, fileName) => {
     // Генерируем docx
     const buffer = await Packer.toBuffer(doc);
     
-    // Скачиваем файл
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${fileName || 'contract'}.docx`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+    // Скачиваем файл с помощью FileSaver
+    const blob = new Blob([buffer], { 
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+    });
+    
+    // Исправленное имя файла (удаляем недопустимые символы)
+    const safeFileName = (fileName || 'contract').replace(/[^\w\s-]/gi, '');
+    
+    // Скачиваем с помощью FileSaver
+    saveAs(blob, `${safeFileName}.docx`);
     
     return true;
   } catch (error) {
