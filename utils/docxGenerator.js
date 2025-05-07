@@ -3,71 +3,163 @@ import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, Borde
 
 export const downloadDocx = async (htmlContent, fileName) => {
   try {
-    // Здесь должен быть сложный код для преобразования HTML в объекты docx
-    // Но для упрощения мы будем использовать библиотеку docx-html
+    // Парсим HTML контент для извлечения данных
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(htmlContent, 'text/html');
     
-    // Это упрощенная реализация - в реальном приложении
-    // нужно использовать более сложную логику для конвертации HTML в DOCX
+    // Получаем контент договора
+    const docElements = [];
     
-    // Создаем простой документ с заголовком
-    const doc = new Document({
-      title: "Договор о практической подготовке",
-      description: "Автоматически сгенерированный договор",
-      styles: {
-        paragraphStyles: [
-          {
-            id: "Heading1",
-            name: "Heading 1",
-            basedOn: "Normal",
-            next: "Normal",
-            quickFormat: true,
-            run: {
-              size: 28,
+    // Заголовок договора
+    docElements.push(
+      new Paragraph({
+        text: "Договор о практической подготовке обучающихся",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+      }),
+    );
+    
+    // Извлекаем данные из HTML для формирования документа
+    const contractDiv = htmlDoc.querySelector('.contract');
+    if (contractDiv) {
+      // Обрабатываем заголовок
+      const headerDiv = contractDiv.querySelector('.contract-header');
+      if (headerDiv) {
+        const h1 = headerDiv.querySelector('h1');
+        if (h1) {
+          docElements.push(
+            new Paragraph({
+              text: h1.textContent,
+              alignment: AlignmentType.CENTER,
               bold: true,
-            },
-            paragraph: {
-              spacing: {
-                after: 120,
-              },
-            },
-          },
-          {
-            id: "Heading2",
-            name: "Heading 2",
-            basedOn: "Normal",
-            next: "Normal",
-            quickFormat: true,
-            run: {
-              size: 26,
+            })
+          );
+        }
+        
+        const h2 = headerDiv.querySelector('h2');
+        if (h2) {
+          docElements.push(
+            new Paragraph({
+              text: h2.textContent,
+              alignment: AlignmentType.CENTER,
               bold: true,
-            },
-            paragraph: {
+            })
+          );
+        }
+        
+        const dateP = headerDiv.querySelector('p');
+        if (dateP) {
+          docElements.push(
+            new Paragraph({
+              text: dateP.textContent,
+              alignment: AlignmentType.RIGHT,
+            })
+          );
+        }
+      }
+      
+      // Обрабатываем основной текст
+      const bodyDiv = contractDiv.querySelector('.contract-body');
+      if (bodyDiv) {
+        const paragraphs = bodyDiv.querySelectorAll('p');
+        paragraphs.forEach(p => {
+          docElements.push(
+            new Paragraph({
+              text: p.textContent,
+              alignment: AlignmentType.JUSTIFIED,
+            })
+          );
+        });
+        
+        // Обрабатываем заголовки разделов
+        const h3Elements = bodyDiv.querySelectorAll('h3');
+        h3Elements.forEach(h3 => {
+          docElements.push(
+            new Paragraph({
+              text: h3.textContent,
+              alignment: AlignmentType.CENTER,
+              bold: true,
               spacing: {
                 before: 240,
                 after: 120,
               },
-            },
-          },
-        ],
-      },
+            })
+          );
+        });
+        
+        // Обрабатываем таблицы
+        const tables = bodyDiv.querySelectorAll('table');
+        tables.forEach(table => {
+          const rows = [];
+          
+          const tableRows = table.querySelectorAll('tr');
+          tableRows.forEach(tr => {
+            const cells = [];
+            const tds = tr.querySelectorAll('th, td');
+            
+            tds.forEach(td => {
+              cells.push(
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      text: td.textContent,
+                      alignment: AlignmentType.LEFT,
+                    }),
+                  ],
+                  borders: {
+                    top: { style: BorderStyle.SINGLE, size: 1 },
+                    bottom: { style: BorderStyle.SINGLE, size: 1 },
+                    left: { style: BorderStyle.SINGLE, size: 1 },
+                    right: { style: BorderStyle.SINGLE, size: 1 },
+                  },
+                })
+              );
+            });
+            
+            rows.push(new TableRow({ children: cells }));
+          });
+          
+          docElements.push(
+            new Table({
+              rows: rows,
+              borders: {
+                top: { style: BorderStyle.SINGLE, size: 1 },
+                bottom: { style: BorderStyle.SINGLE, size: 1 },
+                left: { style: BorderStyle.SINGLE, size: 1 },
+                right: { style: BorderStyle.SINGLE, size: 1 },
+              },
+            })
+          );
+        });
+        
+        // Обрабатываем списки
+        const ols = bodyDiv.querySelectorAll('ol');
+        ols.forEach(ol => {
+          const items = ol.querySelectorAll('li');
+          let counter = ol.hasAttribute('start') ? parseInt(ol.getAttribute('start')) : 1;
+          
+          items.forEach(li => {
+            docElements.push(
+              new Paragraph({
+                text: `${counter}. ${li.textContent}`,
+                alignment: AlignmentType.LEFT,
+                indent: { left: 720 }, // 0.5 дюйма в твипах
+              })
+            );
+            counter++;
+          });
+        });
+      }
+    }
+    
+    // Создаем документ
+    const doc = new Document({
+      title: "Договор о практической подготовке",
+      description: "Автоматически сгенерированный договор",
       sections: [
         {
           properties: {},
-          children: [
-            new Paragraph({
-              text: "Договор о практической подготовке обучающихся",
-              heading: HeadingLevel.HEADING_1,
-              alignment: AlignmentType.CENTER,
-            }),
-            new Paragraph({
-              text: "Данный документ был сгенерирован автоматически через систему.",
-              alignment: AlignmentType.CENTER,
-            }),
-            new Paragraph({
-              text: "Для получения оригинального документа, пожалуйста, загрузите HTML-версию.",
-              alignment: AlignmentType.CENTER,
-            }),
-          ],
+          children: docElements,
         },
       ],
     });
@@ -92,23 +184,3 @@ export const downloadDocx = async (htmlContent, fileName) => {
     return false;
   }
 };
-
-// Заглушка функции для преобразования HTML в объекты docx
-// В реальном приложении здесь должен быть сложный парсер HTML
-const generateDocxFromHtml = (html) => {
-  return [
-    new Paragraph({
-      text: "Этот документ был сгенерирован автоматически",
-      alignment: AlignmentType.CENTER,
-    }),
-  ];
-};
-
-// Примечание: для полной функциональности генерации DOCX из HTML
-// рекомендуется использовать специализированные библиотеки, такие как:
-// - html-to-docx
-// - mammoth.js (в обратном направлении)
-// - html-docx-js
-// 
-// Или использовать серверный компонент для конвертации с помощью
-// более мощных инструментов, таких как LibreOffice или MS Office API
