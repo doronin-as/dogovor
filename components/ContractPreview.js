@@ -42,11 +42,9 @@ export const ContractPreview = ({ contractContent, handleDownload }) => {
       setIsDownloading(false);
       
       // Автоматическое скрытие сообщения через 5 секунд
-      if (downloadMessage) {
-        setTimeout(() => {
-          setDownloadMessage(null);
-        }, 5000);
-      }
+      setTimeout(() => {
+        setDownloadMessage(null);
+      }, 5000);
     }
   };
   
@@ -77,4 +75,3 @@ export const ContractPreview = ({ contractContent, handleDownload }) => {
       </div>
     </div>
   );
-};
