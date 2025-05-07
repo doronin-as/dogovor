@@ -162,11 +162,17 @@ function App() {
     setGeneratedContract(contractContent);
   };
   
-  const handleDownload = () => {
-    if (generatedContract) {
-      downloadDocx(generatedContract, `Договор_${formData.companyShortName || 'о_практике'}`);
-    }
-  };
+const handleDownload = async () => {
+  if (generatedContract) {
+    // Генерируем корректное имя файла
+    const filename = formData.companyShortName 
+      ? `Договор_${formData.companyShortName.replace(/[^\w\s-]/gi, '')}`
+      : 'Договор_о_практике';
+    
+    return await downloadDocx(generatedContract, filename);
+  }
+  return false;
+};
   
   return (
     <div className="app">
