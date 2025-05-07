@@ -169,7 +169,12 @@ const handleDownload = async () => {
       ? `Договор_${formData.companyShortName.replace(/[^\w\s-]/gi, '')}`
       : 'Договор_о_практике';
     
-    return await downloadDocx(generatedContract, filename);
+    try {
+      return await downloadDocx(generatedContract, filename);
+    } catch (error) {
+      console.error('Ошибка при скачивании:', error);
+      return false;
+    }
   }
   return false;
 };
