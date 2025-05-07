@@ -3,154 +3,12 @@ import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, Borde
 
 export const downloadDocx = async (htmlContent, fileName) => {
   try {
-    // Парсим HTML контент для извлечения данных
+    // Парсим HTML контент
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(htmlContent, 'text/html');
     
-    // Получаем контент договора
-    const docElements = [];
-    
-    // Заголовок договора
-    docElements.push(
-      new Paragraph({
-        text: "Договор о практической подготовке обучающихся",
-        heading: HeadingLevel.HEADING_1,
-        alignment: AlignmentType.CENTER,
-      }),
-    );
-    
-    // Извлекаем данные из HTML для формирования документа
-    const contractDiv = htmlDoc.querySelector('.contract');
-    if (contractDiv) {
-      // Обрабатываем заголовок
-      const headerDiv = contractDiv.querySelector('.contract-header');
-      if (headerDiv) {
-        const h1 = headerDiv.querySelector('h1');
-        if (h1) {
-          docElements.push(
-            new Paragraph({
-              text: h1.textContent,
-              alignment: AlignmentType.CENTER,
-              bold: true,
-            })
-          );
-        }
-        
-        const h2 = headerDiv.querySelector('h2');
-        if (h2) {
-          docElements.push(
-            new Paragraph({
-              text: h2.textContent,
-              alignment: AlignmentType.CENTER,
-              bold: true,
-            })
-          );
-        }
-        
-        const dateP = headerDiv.querySelector('p');
-        if (dateP) {
-          docElements.push(
-            new Paragraph({
-              text: dateP.textContent,
-              alignment: AlignmentType.RIGHT,
-            })
-          );
-        }
-      }
-      
-      // Обрабатываем основной текст
-      const bodyDiv = contractDiv.querySelector('.contract-body');
-      if (bodyDiv) {
-        const paragraphs = bodyDiv.querySelectorAll('p');
-        paragraphs.forEach(p => {
-          docElements.push(
-            new Paragraph({
-              text: p.textContent,
-              alignment: AlignmentType.JUSTIFIED,
-            })
-          );
-        });
-        
-        // Обрабатываем заголовки разделов
-        const h3Elements = bodyDiv.querySelectorAll('h3');
-        h3Elements.forEach(h3 => {
-          docElements.push(
-            new Paragraph({
-              text: h3.textContent,
-              alignment: AlignmentType.CENTER,
-              bold: true,
-              spacing: {
-                before: 240,
-                after: 120,
-              },
-            })
-          );
-        });
-        
-        // Обрабатываем таблицы
-        const tables = bodyDiv.querySelectorAll('table');
-        tables.forEach(table => {
-          const rows = [];
-          
-          const tableRows = table.querySelectorAll('tr');
-          tableRows.forEach(tr => {
-            const cells = [];
-            const tds = tr.querySelectorAll('th, td');
-            
-            tds.forEach(td => {
-              cells.push(
-                new TableCell({
-                  children: [
-                    new Paragraph({
-                      text: td.textContent,
-                      alignment: AlignmentType.LEFT,
-                    }),
-                  ],
-                  borders: {
-                    top: { style: BorderStyle.SINGLE, size: 1 },
-                    bottom: { style: BorderStyle.SINGLE, size: 1 },
-                    left: { style: BorderStyle.SINGLE, size: 1 },
-                    right: { style: BorderStyle.SINGLE, size: 1 },
-                  },
-                })
-              );
-            });
-            
-            rows.push(new TableRow({ children: cells }));
-          });
-          
-          docElements.push(
-            new Table({
-              rows: rows,
-              borders: {
-                top: { style: BorderStyle.SINGLE, size: 1 },
-                bottom: { style: BorderStyle.SINGLE, size: 1 },
-                left: { style: BorderStyle.SINGLE, size: 1 },
-                right: { style: BorderStyle.SINGLE, size: 1 },
-              },
-            })
-          );
-        });
-        
-        // Обрабатываем списки
-        const ols = bodyDiv.querySelectorAll('ol');
-        ols.forEach(ol => {
-          const items = ol.querySelectorAll('li');
-          let counter = ol.hasAttribute('start') ? parseInt(ol.getAttribute('start')) : 1;
-          
-          items.forEach(li => {
-            docElements.push(
-              new Paragraph({
-                text: `${counter}. ${li.textContent}`,
-                alignment: AlignmentType.LEFT,
-                indent: { left: 720 }, // 0.5 дюйма в твипах
-              })
-            );
-            counter++;
-          });
-        });
-      }
-    }
+    // Конвертируем HTML в элементы docx
+    const docElements = convertHtmlToDocx(htmlDoc);
     
     // Создаем документ
     const doc = new Document({
@@ -183,4 +41,175 @@ export const downloadDocx = async (htmlContent, fileName) => {
     console.error('Error generating DOCX file:', error);
     return false;
   }
+};
+
+// Функция конвертации HTML в элементы docx
+const convertHtmlToDocx = (htmlDoc) => {
+  const docElements = [];
+  const contract = htmlDoc.querySelector('.contract');
+  
+  if (!contract) {
+    return [
+      new Paragraph({
+        text: "Ошибка при формировании документа",
+        alignment: AlignmentType.CENTER,
+      })
+    ];
+  }
+  
+  // Обработка заголовка договора
+  const header = contract.querySelector('.contract-header');
+  if (header) {
+    const h1 = header.querySelector('h1');
+    if (h1) {
+      docElements.push(
+        new Paragraph({
+          text: h1.textContent,
+          heading: HeadingLevel.HEADING_1,
+          alignment: AlignmentType.CENTER,
+        })
+      );
+    }
+    
+    const h2 = header.querySelector('h2');
+    if (h2) {
+      docElements.push(
+        new Paragraph({
+          text: h2.textContent,
+          heading: HeadingLevel.HEADING_2,
+          alignment: AlignmentType.CENTER,
+        })
+      );
+    }
+    
+    const dateP = header.querySelector('p');
+    if (dateP) {
+      docElements.push(
+        new Paragraph({
+          text: dateP.textContent,
+          alignment: AlignmentType.RIGHT,
+        })
+      );
+    }
+  }
+  
+  // Обработка основной части договора
+  const body = contract.querySelector('.contract-body');
+  if (body) {
+    Array.from(body.children).forEach(element => {
+      if (element.tagName === 'P') {
+        docElements.push(
+          new Paragraph({
+            text: element.textContent,
+            alignment: AlignmentType.JUSTIFIED,
+          })
+        );
+      } else if (element.tagName === 'H3') {
+        docElements.push(
+          new Paragraph({
+            text: element.textContent,
+            heading: HeadingLevel.HEADING_3,
+            alignment: AlignmentType.CENTER,
+          })
+        );
+      } else if (element.tagName === 'H4') {
+        docElements.push(
+          new Paragraph({
+            text: element.textContent,
+            bold: true,
+          })
+        );
+      } else if (element.tagName === 'OL') {
+        processOrderedList(element, docElements);
+      } else if (element.tagName === 'UL') {
+        processUnorderedList(element, docElements);
+      } else if (element.tagName === 'TABLE') {
+        docElements.push(processTable(element));
+      }
+    });
+  }
+  
+  return docElements;
+};
+
+// Обработка нумерованного списка
+const processOrderedList = (olElement, docElements) => {
+  const items = olElement.querySelectorAll('li');
+  let startNumber = olElement.getAttribute('start') ? parseInt(olElement.getAttribute('start')) : 1;
+  
+  items.forEach((item, index) => {
+    docElements.push(
+      new Paragraph({
+        text: `${startNumber + index}. ${item.textContent}`,
+        indent: {
+          left: 720, // 0.5 inch in twips
+        },
+      })
+    );
+  });
+};
+
+// Обработка маркированного списка
+const processUnorderedList = (ulElement, docElements) => {
+  const items = ulElement.querySelectorAll('li');
+  
+  items.forEach(item => {
+    docElements.push(
+      new Paragraph({
+        text: `• ${item.textContent}`,
+        indent: {
+          left: 720, // 0.5 inch in twips
+        },
+      })
+    );
+  });
+};
+
+// Обработка таблицы
+const processTable = (tableElement) => {
+  const rows = [];
+  const tableRows = tableElement.querySelectorAll('tr');
+  
+  tableRows.forEach(row => {
+    const cells = [];
+    const tableCells = row.querySelectorAll('th, td');
+    
+    tableCells.forEach(cell => {
+      const isHeader = cell.tagName === 'TH';
+      
+      cells.push(
+        new TableCell({
+          children: [
+            new Paragraph({
+              text: cell.textContent,
+              alignment: AlignmentType.LEFT,
+            }),
+          ],
+          shading: isHeader ? {
+            fill: "F2F2F2",
+          } : undefined,
+          borders: {
+            top: { style: BorderStyle.SINGLE, size: 1 },
+            bottom: { style: BorderStyle.SINGLE, size: 1 },
+            left: { style: BorderStyle.SINGLE, size: 1 },
+            right: { style: BorderStyle.SINGLE, size: 1 },
+          },
+        })
+      );
+    });
+    
+    rows.push(new TableRow({ children: cells }));
+  });
+  
+  return new Table({
+    rows: rows,
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1 },
+      bottom: { style: BorderStyle.SINGLE, size: 1 },
+      left: { style: BorderStyle.SINGLE, size: 1 },
+      right: { style: BorderStyle.SINGLE, size: 1 },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1 },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1 },
+    },
+  });
 };
