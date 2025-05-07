@@ -1,3 +1,10 @@
+"homepage": "https://doronin-as.github.io/dogovor/",
+"scripts": {
+  // Сохраните существующие скрипты и добавьте:
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build"
+}
+
 "dependencies": {
   "docx": "^9.5.0",
   "file-saver": "^2.0.5",
