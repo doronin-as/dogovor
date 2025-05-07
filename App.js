@@ -68,6 +68,11 @@ function App() {
   });
   
   const [generatedContract, setGeneratedContract] = useState(null);
+  const [downloadStatus, setDownloadStatus] = useState({
+    isDownloading: false,
+    message: null,
+    type: null
+  });
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -162,24 +167,68 @@ function App() {
     setGeneratedContract(contractContent);
   };
   
-const handleDownload = async () => {
-  if (generatedContract) {
+  const handleDownload = async () => {
+    if (!generatedContract) {
+      return false;
+    }
+    
+    // Устанавливаем состояние загрузки
+    setDownloadStatus({
+      isDownloading: true,
+      message: 'Подготовка документа...',
+      type: 'info'
+    });
+    
     try {
       // Генерируем корректное имя файла
       const filename = formData.companyShortName 
         ? `Договор_${formData.companyShortName.replace(/[^\w\s-]/gi, '')}`
         : 'Договор_о_практике';
       
-      // Вызываем функцию скачивания и дожидаемся результата
-      await downloadDocx(generatedContract, filename);
-      return true; // Успешное скачивание
+      console.log('Начинаем скачивание...', filename);
+      
+      // Вызываем функцию скачивания
+      const result = await downloadDocx(generatedContract, filename);
+      
+      console.log('Результат скачивания:', result);
+      
+      // Устанавливаем сообщение об успехе
+      setDownloadStatus({
+        isDownloading: false,
+        message: 'Документ успешно скачан',
+        type: 'success'
+      });
+      
+      // Через 5 секунд скрываем сообщение
+      setTimeout(() => {
+        setDownloadStatus(prev => ({
+          ...prev,
+          message: null
+        }));
+      }, 5000);
+      
+      return true;
     } catch (error) {
       console.error('Ошибка при скачивании:', error);
-      return false; // Ошибка скачивания
+      
+      // Устанавливаем сообщение об ошибке
+      setDownloadStatus({
+        isDownloading: false,
+        message: `Ошибка: ${error.message || 'Не удалось скачать документ'}`,
+        type: 'error'
+      });
+      
+      // Через 5 секунд скрываем сообщение
+      setTimeout(() => {
+        setDownloadStatus(prev => ({
+          ...prev,
+          message: null
+        }));
+      }, 5000);
+      
+      return false;
     }
-  }
-  return false; // Нет данных для скачивания
-};
+  };
   
   return (
     <div className="app">
@@ -204,6 +253,7 @@ const handleDownload = async () => {
             <ContractPreview 
               contractContent={generatedContract}
               handleDownload={handleDownload}
+              downloadStatus={downloadStatus}
             />
           </div>
         )}
